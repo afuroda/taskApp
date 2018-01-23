@@ -37,6 +37,7 @@ class InputViewController: UIViewController {
         
         titleTextField.text = task.title
         contentsTextView.text = task.contents
+        //追加したコード
         categoryTextField.text=task.category
         datePicker.date = task.date as Date
         // Do any additional setup after loading the view.
@@ -58,6 +59,9 @@ class InputViewController: UIViewController {
             self.task.title = self.titleTextField.text!
             self.task.contents = self.contentsTextView.text
             self.task.date = self.datePicker.date as NSDate
+            //追加したコード
+            self.task.category=self.categoryTextField.text!
+            
             self.realm.add(self.task, update: true)
         }
         setNotification(task: task)

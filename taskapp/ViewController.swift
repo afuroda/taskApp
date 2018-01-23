@@ -11,12 +11,17 @@ import RealmSwift   // ←追加
 import UserNotifications    // 追加
 
 
-class ViewController: UIViewController ,UITableViewDelegate, UITableViewDataSource{
+class ViewController: UIViewController ,UITableViewDelegate, UITableViewDataSource,UISearchBarDelegate{
 
     @IBOutlet weak var tableView: UITableView!
     
+    @IBOutlet weak var searchBar: UISearchBar!
+    
+    
     // Realmインスタンスを取得する
     let realm = try! Realm()  // ←追加
+    
+
     
     // DB内のタスクが格納されるリスト。
     // 日付近い順\順でソート：降順
@@ -24,13 +29,46 @@ class ViewController: UIViewController ,UITableViewDelegate, UITableViewDataSour
     var taskArray = try! Realm().objects(Task.self).sorted(byKeyPath: "date", ascending: false)  // ←追加
 
     
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         // Do any additional setup after loading the view, typically from a nib.
         
+        searchBar.showsCancelButton=true
+        
         tableView.delegate = self
         tableView.dataSource = self
+        
+        searchBar.delegate=self
     }
+    
+    //検索ボタンを押すと呼ばれる
+    func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
+        //検索メソッド
+        var result = realm.objects(Task.self).filter("category = '\(searchBar.text!)'")
+        
+        
+        self.view.endEditing(true)
+        
+        taskArray=result
+        
+        tableView.reloadData()
+
+        
+        print(result)
+        
+    }
+    
+    
+    //キャンセルボタンを押すと呼ばれる
+    func searchBarCancelButtonClicked(_ searchBar: UISearchBar) {
+        taskArray=try! Realm().objects(Task.self).sorted(byKeyPath: "date", ascending: false)
+        
+                
+        tableView.reloadData()
+    }
+
+    
 
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
@@ -123,7 +161,11 @@ class ViewController: UIViewController ,UITableViewDelegate, UITableViewDataSour
     // 入力画面から戻ってきた時に TableView を更新させる
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
+        
+      
+        
         tableView.reloadData()
     }
-
+    
+   
 }
